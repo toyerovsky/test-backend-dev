@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
+using TestBackendDev.DAL;
 using TestBackendDev.DAL.Repositories.Companies;
 using TestBackendDev.DAL.Repositories.Employees;
 
-namespace TestBackendDev.DAL.UnitOfWork
+namespace TestBackendDev.BLL.UnitOfWork
 {
     public class UnitOfWork : IUnitOfWork
     {

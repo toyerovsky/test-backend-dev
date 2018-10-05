@@ -2,7 +2,7 @@
 using TestBackendDev.DAL.Repositories.Companies;
 using TestBackendDev.DAL.Repositories.Employees;
 
-namespace TestBackendDev.DAL.UnitOfWork
+namespace TestBackendDev.BLL.UnitOfWork
 {
     public interface IUnitOfWork
     {

@@ -3,7 +3,7 @@ using TestBackendDev.DAL.Models;
 
 namespace TestBackendDev.DAL.Repositories.Companies
 {
-    public interface ICompaniesRepository : IRepository<Company>
+    public interface ICompaniesRepository : IRepository<CompanyModel>
     {
     }
 }

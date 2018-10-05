@@ -12,7 +12,7 @@ namespace TestBackendDev.DAL.Repositories
         where TContext : DbContext
         where TModel : class, IEntity
     {
-        protected TContext Context { get; }
+        protected readonly TContext Context;
 
         protected BaseRepository(TContext context)
         {
@@ -32,14 +32,20 @@ namespace TestBackendDev.DAL.Repositories
         public virtual async Task<TModel> GetAsync(Expression<Func<TModel, bool>> expression,
             Func<IQueryable<TModel>, IQueryable<TModel>> include = null)
         {
-            IQueryable<TModel> result = Context.Set<TModel>().Where(expression);
+            IQueryable<TModel> result = expression != null ?
+                Context.Set<TModel>().Where(expression) :
+                Context.Set<TModel>();
+
             return await PrepareResults(result, include).FirstOrDefaultAsync();
         }
 
         public virtual async Task<IEnumerable<TModel>> GetAllAsync(Expression<Func<TModel, bool>> expression,
             Func<IQueryable<TModel>, IQueryable<TModel>> include = null)
         {
-            IQueryable<TModel> result = Context.Set<TModel>().Where(expression);
+            IQueryable<TModel> result = expression != null ?
+                Context.Set<TModel>().Where(expression) :
+                Context.Set<TModel>();
+
             return await PrepareResults(result, include).ToListAsync();
         }
 
