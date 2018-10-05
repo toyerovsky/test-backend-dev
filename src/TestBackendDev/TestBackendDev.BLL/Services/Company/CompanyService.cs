@@ -35,21 +35,36 @@ namespace TestBackendDev.BLL.Services.Company
             IEnumerable<CompanyModel> result = await _unitOfWork.CompaniesRepository.GetAllAsync(
                 null, i => i.Include(company => company.Employees));
 
-            result = result.Where(company =>
-                !searchDto.Keyword.IsNullOrEmpty() &&
-                (company.Name.StartsWith(searchDto.Keyword) ||
-                 company.Employees.Any(
-                     employee => employee.FirstName.StartsWith(searchDto.Keyword) ||
-                                 employee.LastName.StartsWith(searchDto.Keyword))) ||
-                searchDto.EmployeeDateOfBirthFrom.HasValue &&
-                searchDto.EmployeeDateOfBirthTo.HasValue &&
-                company.Employees.Any(
-                    employee => searchDto.EmployeeDateOfBirthFrom < employee.DateOfBirth &&
-                                searchDto.EmployeeDateOfBirthTo > employee.DateOfBirth) ||
-                company.Employees.Any(
-                    employee => searchDto.EmployeeJobTitles.Contains(employee.JobTitle.ToString())));
+            bool KeywordCheck(CompanyModel company)
+            {
+                return !searchDto.Keyword.IsNullOrEmpty() &&
+                    (company.Name.StartsWith(searchDto.Keyword) ||
+                     company.Employees.Any(
+                         employee => employee.FirstName.StartsWith(searchDto.Keyword) ||
+                                     employee.LastName.StartsWith(searchDto.Keyword)));
+            }
 
-            return _mapper.Map<IEnumerable<CompanyDto>>(result);
+            bool DateOfBirthCheck(CompanyModel company)
+            {
+                return searchDto.EmployeeDateOfBirthFrom.HasValue &&
+                       searchDto.EmployeeDateOfBirthTo.HasValue &&
+                       company.Employees.Any(
+                           employee => searchDto.EmployeeDateOfBirthFrom < employee.DateOfBirth &&
+                                       searchDto.EmployeeDateOfBirthTo > employee.DateOfBirth);
+            }
+
+            bool JobTitleCheck(CompanyModel company)
+            {
+                return company.Employees.Any(
+                    employee => searchDto.EmployeeJobTitles.Contains(employee.JobTitle.ToString()));
+            }
+
+            bool CheckAll(CompanyModel company)
+            {
+                return KeywordCheck(company) || DateOfBirthCheck(company) || JobTitleCheck(company);
+            }
+
+            return _mapper.Map<IEnumerable<CompanyDto>>(result.Where(CheckAll));
         }
 
         public async Task<CompanyDto> UpdateAsync(long id, CompanyDto companyDto)
