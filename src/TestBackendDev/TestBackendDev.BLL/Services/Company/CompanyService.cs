@@ -35,16 +35,16 @@ namespace TestBackendDev.BLL.Services.Company
             IEnumerable<CompanyModel> result = await _unitOfWork.CompaniesRepository.GetAllAsync(
                 null, i => i.Include(company => company.Employees));
 
-            bool KeywordCheck(CompanyModel company)
+            bool CheckKeyword(CompanyModel company)
             {
                 return !searchDto.Keyword.IsNullOrEmpty() &&
-                    (company.Name.StartsWith(searchDto.Keyword) ||
+                    (company.Name.Equals(searchDto.Keyword) ||
                      company.Employees.Any(
-                         employee => employee.FirstName.StartsWith(searchDto.Keyword) ||
-                                     employee.LastName.StartsWith(searchDto.Keyword)));
+                         employee => employee.FirstName.Equals(searchDto.Keyword) ||
+                                     employee.LastName.Equals(searchDto.Keyword)));
             }
 
-            bool DateOfBirthCheck(CompanyModel company)
+            bool CheckDateOfBirth(CompanyModel company)
             {
                 return searchDto.EmployeeDateOfBirthFrom.HasValue &&
                        searchDto.EmployeeDateOfBirthTo.HasValue &&
@@ -53,7 +53,7 @@ namespace TestBackendDev.BLL.Services.Company
                                        searchDto.EmployeeDateOfBirthTo > employee.DateOfBirth);
             }
 
-            bool JobTitleCheck(CompanyModel company)
+            bool CheckJobTitle(CompanyModel company)
             {
                 return company.Employees.Any(
                     employee => searchDto.EmployeeJobTitles.Contains(employee.JobTitle.ToString()));
@@ -61,7 +61,7 @@ namespace TestBackendDev.BLL.Services.Company
 
             bool CheckAll(CompanyModel company)
             {
-                return KeywordCheck(company) || DateOfBirthCheck(company) || JobTitleCheck(company);
+                return CheckKeyword(company) || CheckDateOfBirth(company) || CheckJobTitle(company);
             }
 
             return _mapper.Map<IEnumerable<CompanyDto>>(result.Where(CheckAll));

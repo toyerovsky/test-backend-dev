@@ -6,7 +6,7 @@ using TestBackendDev.DAL.Interfaces;
 
 namespace TestBackendDev.DAL.Models
 {
-    public class Employee : IEntity
+    public class EmployeeModel : IEntity
     {
         [Key]
         public long Id { get; set; }

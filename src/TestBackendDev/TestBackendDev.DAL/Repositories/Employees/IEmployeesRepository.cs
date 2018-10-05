@@ -3,7 +3,7 @@ using TestBackendDev.DAL.Models;
 
 namespace TestBackendDev.DAL.Repositories.Employees
 {
-    public interface IEmployeesRepository : IRepository<Employee>
+    public interface IEmployeesRepository : IRepository<EmployeeModel>
     {   
     }
 }

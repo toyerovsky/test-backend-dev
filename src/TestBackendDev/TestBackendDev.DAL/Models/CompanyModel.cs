@@ -14,6 +14,6 @@ namespace TestBackendDev.DAL.Models
         public int EstablishmentYear { get; set; }
 
         // navigation properties
-        public virtual ICollection<Employee> Employees { get; set; }
+        public virtual ICollection<EmployeeModel> Employees { get; set; }
     }
 }
