@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TestBackendDev.BLL.Dto;
+using TestBackendDev.BLL.Dto.Response;
 using TestBackendDev.BLL.Services.Company;
 using TestBackendDev.BLL.UnitOfWork;
 using TestBackendDev.DAL;
@@ -26,10 +27,6 @@ namespace TestBackendDev.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            services.AddAuthentication(options =>
-            {
-
-            })
 
             services.AddDbContext<TestBackendDevContext>(options =>
                 {
@@ -48,6 +45,10 @@ namespace TestBackendDev.API
 
                 cfg.CreateMap<EmployeeModel, EmployeeDto>();
                 cfg.CreateMap<EmployeeDto, EmployeeModel>();
+
+                // created response contains id only
+                cfg.CreateMap<CompanyDto, CreatedResponseDto>();
+                cfg.CreateMap<EmployeeDto, CreatedResponseDto>();
             });
 
             #endregion

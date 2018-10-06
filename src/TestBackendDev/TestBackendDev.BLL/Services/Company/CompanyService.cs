@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TestBackendDev.BLL.Dto;
+using TestBackendDev.BLL.Dto.Response;
 using TestBackendDev.BLL.Extensions;
 using TestBackendDev.BLL.UnitOfWork;
 using TestBackendDev.DAL.Models;
@@ -21,13 +22,13 @@ namespace TestBackendDev.BLL.Services.Company
             _mapper = mapper;
         }
 
-        public async Task<CompanyDto> CreateAsync(CompanyDto companyDto)
+        public async Task<CreatedResponseDto> CreateAsync(CompanyDto companyDto)
         {
             CompanyModel companyModel = _mapper.Map<CompanyModel>(companyDto);
             await _unitOfWork.CompaniesRepository.InsertAsync(companyModel);
             await _unitOfWork.SaveAsync();
             companyDto.Id = companyModel.Id;
-            return companyDto;
+            return _mapper.Map<CreatedResponseDto>(companyDto);
         }
 
         public async Task<IEnumerable<CompanyDto>> SearchAsync(SearchDto searchDto)

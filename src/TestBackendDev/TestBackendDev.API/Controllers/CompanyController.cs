@@ -31,7 +31,7 @@ namespace TestBackendDev.API.Controllers
 
         [HttpPost("search")]
         [AllowAnonymous]
-        public async Task<IActionResult> CreateAsync([FromBody] SearchDto searchDto)
+        public async Task<IActionResult> SearchAsync([FromBody] SearchDto searchDto)
         {
             if (!ModelState.IsValid)
             {
