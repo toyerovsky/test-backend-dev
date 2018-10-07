@@ -3,12 +3,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using TestBackendDev.BLL.Dto;
 using TestBackendDev.BLL.Services.Company;
+using ZNetCS.AspNetCore.Authentication.Basic;
 
 namespace TestBackendDev.API.Controllers
 {
     [Route("[controller]")]
     [Produces("application/json")]
-    [Authorize]
+    [Authorize("BasicAuth")]
     public class CompanyController : Controller
     {
         private ICompanyService _companyService;
@@ -31,7 +32,7 @@ namespace TestBackendDev.API.Controllers
 
         [HttpPost("search")]
         [AllowAnonymous]
-        public async Task<IActionResult> CreateAsync([FromBody] SearchDto searchDto)
+        public async Task<IActionResult> SearchAsync([FromBody] SearchDto searchDto)
         {
             if (!ModelState.IsValid)
             {

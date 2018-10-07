@@ -5,11 +5,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using TestBackendDev.API.BasicAuthentication;
 using TestBackendDev.BLL.Dto;
+using TestBackendDev.BLL.Dto.Response;
 using TestBackendDev.BLL.Services.Company;
 using TestBackendDev.BLL.UnitOfWork;
 using TestBackendDev.DAL;
 using TestBackendDev.DAL.Models;
+using ZNetCS.AspNetCore.Authentication.Basic;
 
 namespace TestBackendDev.API
 {
@@ -26,15 +29,11 @@ namespace TestBackendDev.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            services.AddAuthentication(options =>
-            {
-
-            })
 
             services.AddDbContext<TestBackendDevContext>(options =>
-                {
-                    options.UseMySql(Configuration.GetConnectionString("TestBackendDevConnectionString"));
-                });
+            {
+                options.UseMySql(Configuration.GetConnectionString("TestBackendDevConnectionString"));
+            });
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ICompanyService, CompanyService>();
@@ -48,12 +47,35 @@ namespace TestBackendDev.API
 
                 cfg.CreateMap<EmployeeModel, EmployeeDto>();
                 cfg.CreateMap<EmployeeDto, EmployeeModel>();
+
+                // created response contains id only
+                cfg.CreateMap<CompanyDto, CreatedResponseDto>();
+                cfg.CreateMap<EmployeeDto, CreatedResponseDto>();
             });
 
             #endregion
 
             IMapper mapper = mapperConfig.CreateMapper();
             services.AddSingleton<IMapper>(mapper);
+
+            services.AddScoped<AuthenticationEvents>();
+
+            services
+                .AddAuthentication()
+                .AddBasicAuthentication(opt =>
+                {
+                    opt.Realm = "TestBackendDev";
+                    opt.EventsType = typeof(AuthenticationEvents);
+                });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("BasicAuth", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.AddAuthenticationSchemes(BasicAuthenticationDefaults.AuthenticationScheme);
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -63,13 +85,8 @@ namespace TestBackendDev.API
             {
                 app.UseDeveloperExceptionPage();
             }
-            else
-            {
-                app.UseHsts();
-            }
 
             app.UseAuthentication();
-            app.UseHttpsRedirection();
             app.UseMvc();
         }
     }
