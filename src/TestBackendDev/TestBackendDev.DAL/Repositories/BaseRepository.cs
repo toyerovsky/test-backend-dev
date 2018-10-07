@@ -65,6 +65,11 @@ namespace TestBackendDev.DAL.Repositories
             Context.Set<TModel>().Remove(model);
         }
 
+        public virtual Task<bool> ContainsAsync(long id)
+        {
+            return Context.Set<TModel>().AnyAsync(model => model.Id == id);
+        }
+
         public virtual async Task<int> SaveAsync()
         {
             return await Context.SaveChangesAsync();

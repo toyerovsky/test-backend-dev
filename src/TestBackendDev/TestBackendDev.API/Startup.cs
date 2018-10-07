@@ -67,15 +67,6 @@ namespace TestBackendDev.API
                     opt.Realm = "TestBackendDev";
                     opt.EventsType = typeof(AuthenticationEvents);
                 });
-
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("BasicAuth", policy =>
-                {
-                    policy.RequireAuthenticatedUser();
-                    policy.AddAuthenticationSchemes(BasicAuthenticationDefaults.AuthenticationScheme);
-                });
-            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

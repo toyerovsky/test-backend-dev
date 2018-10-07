@@ -9,7 +9,7 @@ namespace TestBackendDev.API.Controllers
 {
     [Route("[controller]")]
     [Produces("application/json")]
-    [Authorize("BasicAuth")]
+    [Authorize(AuthenticationSchemes = BasicAuthenticationDefaults.AuthenticationScheme)]
     public class CompanyController : Controller
     {
         private ICompanyService _companyService;
@@ -58,6 +58,19 @@ namespace TestBackendDev.API.Controllers
             }
             
             return Json(resultDto);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAsync([FromRoute] long id)
+        {
+            if (!await _companyService.ContainsAsync(id))
+            {
+                return NotFound(id);
+            }
+
+            await _companyService.DeleteAsync(id);
+
+            return NoContent();
         }
     }
 }

@@ -22,6 +22,7 @@ namespace TestBackendDev.DAL.Interfaces
         /// <param name="model"></param>
         void Update(TModel model);
         void Delete(TModel model);
+        Task<bool> ContainsAsync(long id);
         Task<int> SaveAsync();
     }
 }

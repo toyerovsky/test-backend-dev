@@ -10,5 +10,7 @@ namespace TestBackendDev.BLL.Services.Company
         Task<CreatedResponseDto> CreateAsync(CompanyDto companyDto);
         Task<IEnumerable<CompanyDto>> SearchAsync(SearchDto searchDto);
         Task<CompanyDto> UpdateAsync(long id, CompanyDto companyDto);
+        Task<bool> ContainsAsync(long id);
+        Task DeleteAsync(long id);
     }
 }

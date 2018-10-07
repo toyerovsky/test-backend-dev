@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TestBackendDev.BLL.Dto.Response
+﻿namespace TestBackendDev.BLL.Dto.Response
 {
     public class CreatedResponseDto
     {

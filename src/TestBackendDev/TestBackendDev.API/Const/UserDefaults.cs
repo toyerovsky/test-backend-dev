@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace TestBackendDev.API.Const
+﻿namespace TestBackendDev.API.Const
 {
     public class UserDefaults
     {

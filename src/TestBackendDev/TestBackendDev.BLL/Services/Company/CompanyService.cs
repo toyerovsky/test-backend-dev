@@ -39,10 +39,9 @@ namespace TestBackendDev.BLL.Services.Company
             bool CheckKeyword(CompanyModel company)
             {
                 return !searchDto.Keyword.IsNullOrEmpty() &&
-                    (company.Name.Equals(searchDto.Keyword) ||
-                     company.Employees.Any(
-                         employee => employee.FirstName.Equals(searchDto.Keyword) ||
-                                     employee.LastName.Equals(searchDto.Keyword)));
+                       (company.Name.Equals(searchDto.Keyword) || company.Employees.Any(
+                         employee => employee.FirstName == searchDto.Keyword ||
+                                     employee.LastName == searchDto.Keyword));
             }
 
             bool CheckDateOfBirth(CompanyModel company)
@@ -56,16 +55,18 @@ namespace TestBackendDev.BLL.Services.Company
 
             bool CheckJobTitle(CompanyModel company)
             {
-                return company.Employees.Any(
-                    employee => searchDto.EmployeeJobTitles.Contains(employee.JobTitle.ToString()));
+                return searchDto.EmployeeJobTitles != null &&
+                       searchDto.EmployeeJobTitles.Any(
+                           jobTitle => company.Employees.Any(
+                               employee => employee.JobTitle.ToString() == jobTitle));
             }
 
             bool CheckAll(CompanyModel company)
             {
                 return CheckKeyword(company) || CheckDateOfBirth(company) || CheckJobTitle(company);
             }
-
-            return _mapper.Map<IEnumerable<CompanyDto>>(result.Where(CheckAll));
+            
+            return _mapper.Map<List<CompanyDto>>(result.Where(CheckAll));
         }
 
         public async Task<CompanyDto> UpdateAsync(long id, CompanyDto companyDto)
@@ -78,6 +79,19 @@ namespace TestBackendDev.BLL.Services.Company
             _unitOfWork.CompaniesRepository.Update(companyModel);
             await _unitOfWork.SaveAsync();
             return companyDto;
+        }
+
+        public async Task DeleteAsync(long id)
+        {
+            CompanyModel companyModel = await _unitOfWork.CompaniesRepository.GetAsync(
+                company => company.Id == id, null);
+            _unitOfWork.CompaniesRepository.Delete(companyModel);
+            await _unitOfWork.SaveAsync();
+        }
+
+        public async Task<bool> ContainsAsync(long id)
+        {
+            return await _unitOfWork.CompaniesRepository.ContainsAsync(id);
         }
     }
 }

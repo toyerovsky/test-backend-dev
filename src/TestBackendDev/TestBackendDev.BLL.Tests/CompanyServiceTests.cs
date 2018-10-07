@@ -11,7 +11,6 @@ using TestBackendDev.BLL.Services.Company;
 using TestBackendDev.BLL.UnitOfWork;
 using TestBackendDev.DAL.Enums;
 using TestBackendDev.DAL.Models;
-using TestBackendDev.DAL.Repositories.Companies;
 
 namespace TestBackendDev.BLL.Tests
 {
@@ -19,7 +18,6 @@ namespace TestBackendDev.BLL.Tests
     {
         private readonly Mock<IUnitOfWork> _uowMock = new Mock<IUnitOfWork>();
         private readonly ICompanyService _companyService;
-        private readonly IMapper _mapper;
 
         public CompanyServiceTests()
         {
@@ -75,7 +73,7 @@ namespace TestBackendDev.BLL.Tests
                             Id = 4,
                             CompanyId = 2,
                             DateOfBirth = new DateTime(1988, 06, 21),
-                            FirstName = "Trygve",
+                            FirstName = "Vlado",
                             LastName = "Boniface",
                             JobTitle = JobTitle.Manager
                         },
@@ -152,13 +150,14 @@ namespace TestBackendDev.BLL.Tests
                 cfg.CreateMap<EmployeeDto, CreatedResponseDto>();
             });
 
-            _mapper = mapperConfig.CreateMapper();
+            IMapper mapper = mapperConfig.CreateMapper();
 
             _uowMock.Setup(uow => uow
-                .CompaniesRepository.GetAllAsync(null, null))
+                .CompaniesRepository.GetAllAsync(null,
+                        It.IsAny<Func<IQueryable<CompanyModel>, IQueryable<CompanyModel>>>()))
                 .Returns(Task.FromResult(mockCompanies));
 
-            _companyService = new CompanyService(_uowMock.Object, _mapper);
+            _companyService = new CompanyService(_uowMock.Object, mapper);
         }
 
         [Test]
@@ -169,9 +168,54 @@ namespace TestBackendDev.BLL.Tests
                 Keyword = "Microsoft"
             };
 
-            var result = (await _companyService.SearchAsync(searchDto));
-            Assert.That(result.All(c => c.Name == "Microsoft"));
+            var result = (await _companyService.SearchAsync(searchDto)).ToList();
+            Assert.That(result.Count == 1 &&
+                        result.All(c => c.Name == "Microsoft"));
         }
 
+        [Test]
+        public async Task Search_ReturnsMicrosoftAndGoogle_When_KeywordIsVlado()
+        {
+            SearchDto searchDto = new SearchDto()
+            {
+                Keyword = "Vlado"
+            };
+
+            var result = (await _companyService.SearchAsync(searchDto)).ToList();
+            Assert.That(result.Count == 2
+                        && result.Any(c => c.Name == "Microsoft")
+                        && result.Any(c => c.Name == "Google"));
+        }
+
+        [Test]
+        public async Task Search_ReturnsGoogleAndSamsung_When_JobTitleIsDeveloper()
+        {
+            SearchDto searchDto = new SearchDto()
+            {
+                EmployeeJobTitles = new List<string>()
+                {
+                    "Developer"
+                }
+            };
+
+            var result = (await _companyService.SearchAsync(searchDto)).ToList();
+            Assert.That(result.Count == 2
+                        && result.Any(c => c.Name == "Samsung")
+                        && result.Any(c => c.Name == "Google"));
+        }
+
+        [Test]
+        public async Task Search_ReturnsMicrosoft_When_DateFrom1970To1972()
+        {
+            SearchDto searchDto = new SearchDto()
+            {
+                EmployeeDateOfBirthFrom = new DateTime(1970, 1, 1),
+                EmployeeDateOfBirthTo = new DateTime(1972, 1, 1),
+            };
+
+            var result = (await _companyService.SearchAsync(searchDto)).ToList();
+            Assert.That(result.Count == 1
+                        && result.Any(c => c.Name == "Microsoft"));
+        }
     }
 }
