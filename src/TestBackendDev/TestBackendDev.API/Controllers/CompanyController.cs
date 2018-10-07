@@ -3,12 +3,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using TestBackendDev.BLL.Dto;
 using TestBackendDev.BLL.Services.Company;
+using ZNetCS.AspNetCore.Authentication.Basic;
 
 namespace TestBackendDev.API.Controllers
 {
     [Route("[controller]")]
     [Produces("application/json")]
-    [Authorize]
+    [Authorize("BasicAuth")]
     public class CompanyController : Controller
     {
         private ICompanyService _companyService;

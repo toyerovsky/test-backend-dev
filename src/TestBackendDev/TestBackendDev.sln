@@ -9,9 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestBackendDev.BLL", "TestB
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestBackendDev.API", "TestBackendDev.API\TestBackendDev.API.csproj", "{476CCB78-CDD5-41E1-84AE-A3FB0E0D38FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestBackendDev.API.Tests", "TestBackendDev.API.Tests\TestBackendDev.API.Tests.csproj", "{2B2B3862-0688-4C24-A36B-6914DE9A3858}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestBackendDev.API.Tests", "TestBackendDev.API.Tests\TestBackendDev.API.Tests.csproj", "{2B2B3862-0688-4C24-A36B-6914DE9A3858}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestBackendDev.BLL.Tests", "TestBackendDev.BLL.Tests\TestBackendDev.BLL.Tests.csproj", "{E4FCB8FA-185D-4667-96A3-B17114B6D4F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestBackendDev.BLL.Tests", "TestBackendDev.BLL.Tests\TestBackendDev.BLL.Tests.csproj", "{E4FCB8FA-185D-4667-96A3-B17114B6D4F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

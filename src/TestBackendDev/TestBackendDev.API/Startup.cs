@@ -1,16 +1,18 @@
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using TestBackendDev.API.BasicAuthentication;
 using TestBackendDev.BLL.Dto;
 using TestBackendDev.BLL.Dto.Response;
 using TestBackendDev.BLL.Services.Company;
 using TestBackendDev.BLL.UnitOfWork;
 using TestBackendDev.DAL;
 using TestBackendDev.DAL.Models;
+using ZNetCS.AspNetCore.Authentication.Basic;
 
 namespace TestBackendDev.API
 {
@@ -55,6 +57,25 @@ namespace TestBackendDev.API
 
             IMapper mapper = mapperConfig.CreateMapper();
             services.AddSingleton<IMapper>(mapper);
+
+            services.AddScoped<AuthenticationEvents>();
+
+            services
+                .AddAuthentication()
+                .AddBasicAuthentication(opt =>
+                {
+                    opt.Realm = "TestBackendDev";
+                    opt.EventsType = typeof(AuthenticationEvents);
+                });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("BasicAuth", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.AddAuthenticationSchemes(BasicAuthenticationDefaults.AuthenticationScheme);
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -64,13 +85,8 @@ namespace TestBackendDev.API
             {
                 app.UseDeveloperExceptionPage();
             }
-            else
-            {
-                app.UseHsts();
-            }
 
             app.UseAuthentication();
-            app.UseHttpsRedirection();
             app.UseMvc();
         }
     }
