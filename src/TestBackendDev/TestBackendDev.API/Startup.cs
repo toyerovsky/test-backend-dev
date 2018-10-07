@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -29,9 +29,9 @@ namespace TestBackendDev.API
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddDbContext<TestBackendDevContext>(options =>
-                {
-                    options.UseMySql(Configuration.GetConnectionString("TestBackendDevConnectionString"));
-                });
+            {
+                options.UseMySql(Configuration.GetConnectionString("TestBackendDevConnectionString"));
+            });
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ICompanyService, CompanyService>();
