@@ -76,7 +76,7 @@ namespace TestBackendDev.BLL.Services.Company
                 i => i.Include(company => company.Employees));
 
             _mapper.Map(companyDto, companyModel);
-            _unitOfWork.CompaniesRepository.Update(companyModel);
+
             await _unitOfWork.SaveAsync();
             return companyDto;
         }

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using TestBackendDev.DAL.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TestBackendDev.BLL.Dto
 {

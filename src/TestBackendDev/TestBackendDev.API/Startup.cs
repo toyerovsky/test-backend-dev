@@ -1,16 +1,20 @@
 ﻿using AutoMapper;
+using AutoMapper.EquivalencyExpression;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
+using System;
 using TestBackendDev.API.BasicAuthentication;
 using TestBackendDev.BLL.Dto;
 using TestBackendDev.BLL.Dto.Response;
 using TestBackendDev.BLL.Services.Company;
 using TestBackendDev.BLL.UnitOfWork;
 using TestBackendDev.DAL;
+using TestBackendDev.DAL.Enums;
 using TestBackendDev.DAL.Models;
 using ZNetCS.AspNetCore.Authentication.Basic;
 
@@ -28,7 +32,13 @@ namespace TestBackendDev.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+                .AddJsonOptions(options =>
+                {
+                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                });
 
             services.AddDbContext<TestBackendDevContext>(options =>
             {
@@ -42,11 +52,34 @@ namespace TestBackendDev.API
 
             var mapperConfig = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<CompanyModel, CompanyDto>();
-                cfg.CreateMap<CompanyDto, CompanyModel>();
+                cfg.AddCollectionMappers();
 
-                cfg.CreateMap<EmployeeModel, EmployeeDto>();
-                cfg.CreateMap<EmployeeDto, EmployeeModel>();
+                cfg.CreateMap<CompanyModel, CompanyDto>()
+                    .PreserveReferences()
+                    .EqualityComparison((model, dto) => model.Id == dto.Id)
+                    .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+                cfg.CreateMap<CompanyDto, CompanyModel>()
+                    .PreserveReferences()
+                    .EqualityComparison((dto, model) => model.Id == dto.Id)
+                    .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
+                cfg.CreateMap<EmployeeModel, EmployeeDto>()
+                    .PreserveReferences()
+                    .EqualityComparison((model, dto) => model.Id == dto.Id)
+                    .ForMember(
+                        employeeDto => employeeDto.JobTitle,
+                        opt => opt.ResolveUsing(
+                            model => model.JobTitle.ToString()))
+                    .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
+                cfg.CreateMap<EmployeeDto, EmployeeModel>()
+                    .PreserveReferences()
+                    .EqualityComparison((dto, model) => model.Id == dto.Id)
+                    .ForMember(
+                        employeeModel => employeeModel.JobTitle,
+                        opt => opt.ResolveUsing(
+                            model => Enum.Parse(typeof(JobTitle), model.JobTitle)))
+                    .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
                 // created response contains id only
                 cfg.CreateMap<CompanyDto, CreatedResponseDto>();
