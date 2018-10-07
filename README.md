@@ -13,8 +13,9 @@ RESTful Web API proudly made with .NET Core 2.1 and EF Core
   - [X] Create
   - [X] Search
   - [X] Update
-- [ ] API
-  - [ ] Basic Authentication
+  - [X] Delete
+- [X] API
+  - [X] Basic Authentication
   - [X] Auto mapper
   - [X] Async actions in controllers
-- [ ] Unit Tests
+- [X] Unit Tests
