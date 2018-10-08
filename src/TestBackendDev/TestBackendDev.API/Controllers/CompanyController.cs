@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
+﻿using System;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using MySql.Data.MySqlClient;
 using TestBackendDev.BLL.Dto;
 using TestBackendDev.BLL.Services.Company;
 using ZNetCS.AspNetCore.Authentication.Basic;
@@ -50,14 +53,22 @@ namespace TestBackendDev.API.Controllers
                 return BadRequest(companyDto);
             }
 
-            CompanyDto resultDto = await _companyService.UpdateAsync(id, companyDto);
-
-            if (resultDto == null)
+            // prevent from foreign key fail
+            try
             {
-                return NotFound(id);
+                CompanyDto resultDto = await _companyService.UpdateAsync(id, companyDto);
+
+                if (resultDto == null)
+                {
+                    return NotFound(id);
+                }
+
+                return Json(resultDto);
             }
-            
-            return Json(resultDto);
+            catch (DbUpdateException)
+            {
+                return BadRequest(companyDto);
+            }
         }
 
         [HttpDelete("{id}")]
