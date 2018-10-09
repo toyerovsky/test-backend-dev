@@ -1,10 +1,9 @@
-﻿using System;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using MySql.Data.MySqlClient;
+using System.Threading.Tasks;
 using TestBackendDev.BLL.Dto;
+using TestBackendDev.BLL.Dto.Response;
 using TestBackendDev.BLL.Services.Company;
 using ZNetCS.AspNetCore.Authentication.Basic;
 
@@ -42,7 +41,9 @@ namespace TestBackendDev.API.Controllers
                 return BadRequest(searchDto);
             }
 
-            return Json(await _companyService.SearchAsync(searchDto));
+            var result = new SearchResponseDto { Results = await _companyService.SearchAsync(searchDto) };
+
+            return Json(result);
         }
 
         [HttpPut("{id}")]
